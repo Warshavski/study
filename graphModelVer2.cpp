@@ -39,51 +39,56 @@ struct chain
 };
 typedef chain *chainLink;
 
-/*
-link *initializeList(const int listSize)
+
+int **initializeMatrix(const int matrixSize)
 {
-	link *list = new link[listSize];
-	
-	for (int i = 0; i < listSize; ++i)
-		list[i] = new node(0, 0, NULL);
-	return list;
-}
-*/
-/*
-*/
-
-
-
-/* TODO rebuild for list of chains
-void printList(link *list, const int listSize, char path[])
-{
-	const int size = 4;
-
-	const int inRow = 20;
-	ofstream outFile;
-	outFile.open(path);
-	
-	outFile << size << '\n';
-	for (int i = 0; i < listSize; ++i)
+	int **matrix = new int*[matrixSize];
+	for (int i = 0; i < matrixSize; ++i)
 	{
-		outFile << i + 1 << ";";
-		
-		link tempHead = list[i];
-		bool isFirstElement = true;
-		while(tempHead != NULL)
-		{
-			if (!isFirstElement)
-				outFile << "|";
-			outFile << tempHead->id << "," << tempHead->contact;
-			tempHead = tempHead->next;
-			isFirstElement = false;
-		}
-		outFile << "\n";
+		matrix[i] = new int[matrixSize];
+		for (int j = 0; j < matrixSize; ++j)
+			matrix[i][j] = 0;
 	}
-	outFile.close();
+	return matrix;
 }
-*/
 
+int **createMatrix(chainLink list, int matrixSize)
+{
+	int **matrix = initializeMatrix(matrixSize);
+	chainLink tempHead = list;
+	
+	while (tempHead != NULL)
+	{
+		nodeLink headNode = tempHead->elementList;
+		nodeLink tempNode = headNode;
+		
+		while (tempNode != NULL)
+		{
+			nodeLink searchNode = headNode;
+			while (searchNode != NULL)
+			{
+				if (searchNode->id != tempNode->id)
+				{
+					matrix[tempNode->id - 1][searchNode->id - 1] += 1;
+				}
+				searchNode = searchNode->next;
+			}
+			tempNode = tempNode->next;
+		}
+		tempHead = tempHead->next;
+	}
+	return matrix;
+}
+
+void printMatrix(int **matrix, int matrixSize)
+{
+	for (int i = 0; i < matrixSize; ++i)
+	{
+		for (int j = 0; j < matrixSize; ++j)
+			cout << matrix[i][j] << " ";
+		cout << endl;
+	}
+}
 
 chainLink createChainList(int listSize)
 {
@@ -180,22 +185,6 @@ void printChainList(chainLink listHead, char path[])
 
 int main()
 {
-	//const int LIST_SIZE = 3;
-	//chainLink chainsList = createChainList(LIST_SIZE);
-	//printChainList(chainsList);
-	//cout << endl;
-	
-	
-	
-	
-	
-	
-	//int listSize = 0;
-	
-	//cout << "input list size : ";
-	//cin >> listSize;
-	
-	
 	char path[] = "test.txt";
 	ifstream outfile;
 	outfile.open(path);
@@ -262,7 +251,23 @@ int main()
 	printChainList(listHead);
 	printChainList(listHead, "ntest.txt");
 	
+	int **matrix = createMatrix(listHead, 4);
+	
+	printMatrix(matrix, 4);
+	
 	return 0;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
